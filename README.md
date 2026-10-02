@@ -70,6 +70,16 @@ The dashboard shows live system stats and SSH service status. When the SSH servi
 - Managing services with `systemd`
 - Using Git/GitHub for version control, including SSH key authentication
 
+## 🌐 Bonus: Network Topology Design
+
+As part of this project, I also designed and configured a basic network topology in Cisco Packet Tracer to practice routing and connectivity fundamentals.
+
+![Network Topology](images/topology.png)
+
+- Router (2911) connecting two switches
+- Configured static IP addressing and routing between subnets
+- Verified end-to-end connectivity (PC0 ↔ Server0)
+  
 ## 🔮 Future Improvements
 
 - Add more services to monitor (web server, database, etc.)
