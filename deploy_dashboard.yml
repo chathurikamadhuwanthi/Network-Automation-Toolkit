@@ -1,0 +1,83 @@
+---
+- name: Deploy Network Monitor Dashboard
+  hosts: localhost
+  connection: local
+  become: true
+
+  vars:
+   app_dir: /opt/netmon
+   app_user: chathu2
+   venv_dir: /opt/netmon/venv
+   source_file: /home/chathu2/dashboard.py
+
+  tasks:
+   - name: Install system packages
+     apt:
+       name:
+         - python3
+         - python3-pip
+         - python3-venv
+       state: present
+       update_cache: true
+
+   - name: Create app directory
+     file:
+       path: "{{ app_dir }}"
+       state: directory
+       owner: "{{ app_user }}"
+       mode: "07755"
+
+   - name: Create virtual environment and install Flask + psutil
+     become: true
+     pip: 
+       name:
+          - flask
+          - psutil
+       virtualenv: "{{ venv_dir }}"
+       virtualenv_command: python3 -m venv
+     become_user: "{{ app_user }}"
+
+   - name: Copy dashboard.py
+     copy: 
+       src: "{{ source_file  }}"
+       dest: "{{ app_dir }}/dashboard.py"
+       owner: "{{ app_user }}"
+       mode: "0644"
+     notify: Restart dashboard
+
+   - name: Create systemd service for dashboard
+     copy: 
+        dest: /etc/systemd/system/netmon-dashboard.service
+        content: |
+            [Unit]
+            Description=Network Monitor Dashboard
+            After=network.target
+
+            [Service]
+            User={{ app_user }}
+            WorkingDirectory={{ app_dir }}
+            ExecStart={{ venv_dir }}/bin/python {{ app_dir }}/dashboard.py
+            Restart=always
+
+            [Install]
+            WantedBy=multi-user.target
+     notify:  Restart dashboard
+
+   - name: Enable and start dashboard service
+     systemd:
+       name: netmon-dashboard
+       enabled: true
+       state: started
+       daemon_reload: true
+
+   - name: Ensure SSH service is running (auto-heal)
+     systemd: 
+       name: ssh
+       state: started
+
+  handlers:
+   - name: Restart dashboard
+     systemd:
+       name: netmon-dashboard
+       state: restarted   
+
