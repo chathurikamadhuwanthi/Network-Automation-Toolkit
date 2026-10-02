@@ -74,7 +74,7 @@ The dashboard shows live system stats and SSH service status. When the SSH servi
 
 As part of this project, I also designed and configured a basic network topology in Cisco Packet Tracer to practice routing and connectivity fundamentals.
 
-![Network Topology](images/topology.png)
+![Network Topology](topology.png)
 
 - Router (2911) connecting two switches
 - Configured static IP addressing and routing between subnets
