@@ -7,29 +7,15 @@ A self-hosted monitoring system that tracks server health (CPU, RAM, Disk, SSH s
 This project simulates a real-world server monitoring and auto-healing setup, built as part of my networking internship preparation. It demonstrates practical skills in Linux administration, Python scripting, automation, and DevOps tooling.
 
 ## 🏗️ Architecture
-
-┌─────────────────┐
-│ Ubuntu Server │ (VirtualBox VM)
-│ │
-│ ┌────────────┐ │
-│ │ monitor.py │──┼──> Checks CPU / RAM / Disk / SSH status every 5s
-│ └────────────┘ │
-│ │ │
-│ ▼ │
-│ ┌────────────┐ │
-│ │ Auto-Heal │──┼──> If SSH is down, restarts it automatically
-│ └────────────┘ │
-│ │ │
-│ ▼ │
-│ ┌────────────┐ │
-│ │dashboard.py│──┼──> Flask web app showing live status
-│ └────────────┘ │
-└─────────┬────────┘
-│
-▼
-Browser Dashboard
-(http://localhost:5000)
-
+```mermaid
+graph TD
+    A[Ubuntu Server - VirtualBox VM] --> B[monitor.py]
+    B -->|Checks CPU/RAM/Disk/SSH every 5s| C{SSH Down?}
+    C -->|Yes| D[Auto-Heal: Restart SSH]
+    C -->|No| E[dashboard.py - Flask Web App]
+    D --> E
+    E --> F[Browser Dashboard - localhost:5000]
+```
 
 Deployment is automated with **Ansible** (`deploy_dashboard.yml`), which installs dependencies, sets up a Python virtual environment, and registers the dashboard as a `systemd` service — so it runs permanently and restarts automatically on boot.
 
